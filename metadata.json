@@ -1,0 +1,6 @@
+{
+  "name": "Suren Coding Agent",
+  "description": "Production-ready autonomous AI software engineering agent capable of inspecting, planning, modifying, testing, diagnosing, committing, and deploying across multi-stack project repositories.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

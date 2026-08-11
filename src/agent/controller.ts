@@ -120,10 +120,10 @@ RULES:
 
           // Determine stage mapping
           let stage: TaskStage = 'MODIFY';
-          if (['list_files', 'read_file', 'search_code', 'github_get_file'].includes(toolName)) stage = 'INSPECT';
+          if (['list_files', 'read_file', 'search_code', 'github_get_file', 'railway_list_projects', 'railway_get_project', 'railway_get_deployments', 'railway_get_deployment_logs'].includes(toolName)) stage = 'INSPECT';
           if (['run_tests', 'run_build', 'run_lint'].includes(toolName)) stage = 'TEST';
           if (['git_commit', 'git_create_branch'].includes(toolName)) stage = 'COMMIT';
-          if (['vercel_deploy', 'supabase_create_migration'].includes(toolName)) stage = 'DEPLOY';
+          if (['vercel_deploy', 'supabase_create_migration', 'railway_redeploy'].includes(toolName)) stage = 'DEPLOY';
 
           TaskStore.updateStage(this.taskId, stage);
 

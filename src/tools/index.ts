@@ -4,6 +4,7 @@ import { TERMINAL_TOOL_DEFINITIONS, executeTerminalTool } from './terminalTools'
 import { GIT_TOOL_DEFINITIONS, executeGitTool } from './gitTools';
 import { GITHUB_TOOL_DEFINITIONS, executeGitHubTool } from './githubTools';
 import { VERCEL_TOOL_DEFINITIONS, executeVercelTool } from './vercelTools';
+import { RAILWAY_TOOL_DEFINITIONS, executeRailwayTool } from './railwayTools';
 import { SUPABASE_TOOL_DEFINITIONS, executeSupabaseTool } from './supabaseTools';
 import { BROWSER_TOOL_DEFINITIONS, executeBrowserTool } from './browserTools';
 
@@ -13,6 +14,7 @@ export const ALL_TOOLS: ToolDefinition[] = [
   ...GIT_TOOL_DEFINITIONS,
   ...GITHUB_TOOL_DEFINITIONS,
   ...VERCEL_TOOL_DEFINITIONS,
+  ...RAILWAY_TOOL_DEFINITIONS,
   ...SUPABASE_TOOL_DEFINITIONS,
   ...BROWSER_TOOL_DEFINITIONS,
 ];
@@ -27,6 +29,7 @@ export async function executeTool(
   const gitToolNames = new Set(GIT_TOOL_DEFINITIONS.map((t) => t.name));
   const githubToolNames = new Set(GITHUB_TOOL_DEFINITIONS.map((t) => t.name));
   const vercelToolNames = new Set(VERCEL_TOOL_DEFINITIONS.map((t) => t.name));
+  const railwayToolNames = new Set(RAILWAY_TOOL_DEFINITIONS.map((t) => t.name));
   const supabaseToolNames = new Set(SUPABASE_TOOL_DEFINITIONS.map((t) => t.name));
   const browserToolNames = new Set(BROWSER_TOOL_DEFINITIONS.map((t) => t.name));
 
@@ -48,6 +51,10 @@ export async function executeTool(
 
   if (vercelToolNames.has(toolName)) {
     return executeVercelTool(toolName, args);
+  }
+
+  if (railwayToolNames.has(toolName)) {
+    return executeRailwayTool(toolName, args);
   }
 
   if (supabaseToolNames.has(toolName)) {

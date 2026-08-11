@@ -56,7 +56,7 @@ export async function executeBrowserTool(name: string, args: Record<string, any>
 
   try {
     if (name === 'open_url' || name === 'inspect_page') {
-      const res = await fetch(targetUrl, { timeout: 5000 } as any);
+      const res = await fetch(targetUrl, { signal: AbortSignal.timeout(10000) });
       const text = await res.text();
       const titleMatch = text.match(/<title>(.*?)<\/title>/i);
       const title = titleMatch ? titleMatch[1] : 'No Title';

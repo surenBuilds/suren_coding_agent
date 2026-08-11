@@ -160,7 +160,13 @@ RULES:
           let isSuccess = true;
 
           try {
-            toolResult = await executeTool(toolName, toolArgs, this.baseCwd);
+            const TOOL_TIMEOUT_MS = 25000;
+            toolResult = await Promise.race([
+              executeTool(toolName, toolArgs, this.baseCwd),
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error(`Tool "${toolName}" timed out after ${TOOL_TIMEOUT_MS}ms`)), TOOL_TIMEOUT_MS)
+              ),
+            ]);
             if (toolResult && toolResult.success === false) {
               isSuccess = false;
             }

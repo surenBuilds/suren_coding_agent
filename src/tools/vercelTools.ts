@@ -80,22 +80,24 @@ export async function executeVercelTool(name: string, args: Record<string, any>)
     'Content-Type': 'application/json',
   };
 
+  const TIMEOUT_MS = 15000;
+
   try {
     switch (name) {
       case 'vercel_get_project': {
-        const res = await fetch(`https://api.vercel.com/v9/projects/${args.projectIdOrName}`, { headers });
+        const res = await fetch(`https://api.vercel.com/v9/projects/${args.projectIdOrName}`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`Vercel API error: ${res.statusText}`);
         return await res.json();
       }
 
       case 'vercel_get_deployments': {
-        const res = await fetch(`https://api.vercel.com/v6/deployments?projectId=${args.projectIdOrName}&limit=5`, { headers });
+        const res = await fetch(`https://api.vercel.com/v6/deployments?projectId=${args.projectIdOrName}&limit=5`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`Vercel API error: ${res.statusText}`);
         return await res.json();
       }
 
       case 'vercel_get_deployment': {
-        const res = await fetch(`https://api.vercel.com/v13/deployments/${args.deploymentId}`, { headers });
+        const res = await fetch(`https://api.vercel.com/v13/deployments/${args.deploymentId}`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`Vercel API error: ${res.statusText}`);
         return await res.json();
       }

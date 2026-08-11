@@ -130,17 +130,19 @@ export async function executeGitHubTool(name: string, args: Record<string, any>)
     'User-Agent': 'Suren-Coding-Agent',
   };
 
+  const TIMEOUT_MS = 15000;
+
   try {
     switch (name) {
       case 'github_get_repository': {
-        const res = await fetch(`https://api.github.com/repos/${args.ownerRepo}`, { headers });
+        const res = await fetch(`https://api.github.com/repos/${args.ownerRepo}`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`GitHub API error: ${res.statusText}`);
         return await res.json();
       }
 
       case 'github_get_file': {
         const ref = args.ref ? `?ref=${args.ref}` : '';
-        const res = await fetch(`https://api.github.com/repos/${args.ownerRepo}/contents/${args.path}${ref}`, { headers });
+        const res = await fetch(`https://api.github.com/repos/${args.ownerRepo}/contents/${args.path}${ref}`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`GitHub API error: ${res.statusText}`);
         const data: any = await res.json();
         const content = Buffer.from(data.content, 'base64').toString('utf-8');
@@ -149,7 +151,7 @@ export async function executeGitHubTool(name: string, args: Record<string, any>)
 
       case 'github_search_code': {
         const q = encodeURIComponent(`${args.query} repo:${args.ownerRepo}`);
-        const res = await fetch(`https://api.github.com/search/code?q=${q}`, { headers });
+        const res = await fetch(`https://api.github.com/search/code?q=${q}`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`GitHub API search error: ${res.statusText}`);
         return await res.json();
       }
@@ -164,13 +166,14 @@ export async function executeGitHubTool(name: string, args: Record<string, any>)
             head: args.head,
             base: args.base || 'main',
           }),
+          signal: AbortSignal.timeout(TIMEOUT_MS),
         });
         if (!res.ok) throw new Error(`GitHub PR creation error: ${res.statusText}`);
         return await res.json();
       }
 
       case 'github_get_actions': {
-        const res = await fetch(`https://api.github.com/repos/${args.ownerRepo}/actions/runs`, { headers });
+        const res = await fetch(`https://api.github.com/repos/${args.ownerRepo}/actions/runs`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
         if (!res.ok) throw new Error(`GitHub Actions error: ${res.statusText}`);
         return await res.json();
       }

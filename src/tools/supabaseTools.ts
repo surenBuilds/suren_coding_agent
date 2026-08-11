@@ -107,7 +107,7 @@ export async function executeSupabaseTool(
   try {
     switch (name) {
       case 'supabase_get_project': {
-        const res = await fetch(`https://api.supabase.com/v1/projects/${args.projectRef}`, { headers });
+        const res = await fetch(`https://api.supabase.com/v1/projects/${args.projectRef}`, { headers, signal: AbortSignal.timeout(15000) });
         if (!res.ok) throw new Error(`Supabase API error: ${res.statusText}`);
         return await res.json();
       }

@@ -107,7 +107,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 </div>
 
                 {/* FINAL REPORT OR SUMMARY */}
-                {activeTask.finalReport ? (
+                {activeTask.status === 'failed' ? (
+                  <div className="p-4 rounded-lg bg-red-950/40 border border-red-500/30 text-sm text-red-200 font-mono whitespace-pre-wrap leading-relaxed">
+                    ❌ Task failed: {activeTask.error || 'Unknown error'}
+                  </div>
+                ) : activeTask.finalReport ? (
                   <div className="p-4 rounded-lg bg-zinc-900/90 border border-emerald-500/30 text-sm text-zinc-200 font-mono whitespace-pre-wrap leading-relaxed">
                     {activeTask.finalReport}
                   </div>

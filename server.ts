@@ -106,7 +106,8 @@ async function startServer() {
       }
 
       // Create Task
-      const task = TaskStore.createTask(project.id, routeResult.cleanRequest);
+      const configuredMaxIterations = parseInt(process.env.MAX_AGENT_ITERATIONS || '20', 10);
+      const task = TaskStore.createTask(project.id, routeResult.cleanRequest, configuredMaxIterations);
 
       // Start Agent Controller asynchronously
       const controller = new AgentController(task.id, project);

@@ -4,7 +4,7 @@
     "name": "KrtLab / Կրթլաբ",
     "description": "Educational ecosystem featuring AI Mentor, progress tracking, streaks, and interactive learning.",
     "localPath": "./projects/krtlab",
-    "githubRepository": "KrtLab/krtlab-app",
+    "githubRepository": "surenBuilds/Krtlab-appp",
     "defaultBranch": "main",
     "vercelProject": "krtlab-web",
     "supabaseProject": "krtlab-db-prod",

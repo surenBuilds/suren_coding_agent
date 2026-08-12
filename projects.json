@@ -6,7 +6,7 @@
     "localPath": "./projects/krtlab",
     "githubRepository": "surenBuilds/Krtlab-appp",
     "defaultBranch": "main",
-    "vercelProject": "krtlab-web",
+    "vercelProject": "krt-lab",
     "supabaseProject": "krtlab-db-prod",
     "stack": [
       "React",

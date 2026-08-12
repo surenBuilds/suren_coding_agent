@@ -10,13 +10,17 @@ import { AgentRouter } from './router';
 export class AgentController {
   private taskId: string;
   private project: Project;
+  /** Project-scoped root — file/terminal/git tools operate here (the project's own local checkout). */
   private baseCwd: string;
+  /** Agent's own workspace root — used for agent-owned data like memory docs, never for project code. */
+  private workspaceRoot: string;
   private provider: LLMProvider;
 
-  constructor(taskId: string, project: Project, baseCwd: string = process.cwd()) {
+  constructor(taskId: string, project: Project, baseCwd: string = process.cwd(), workspaceRoot: string = process.cwd()) {
     this.taskId = taskId;
     this.project = project;
     this.baseCwd = baseCwd;
+    this.workspaceRoot = workspaceRoot;
     this.provider = LLMFactory.getProvider();
   }
 
@@ -36,8 +40,8 @@ export class AgentController {
         success: true,
       });
 
-      // Load Memory
-      const memoryContent = await MemoryManager.loadProjectMemory(this.project.memoryPath, this.baseCwd);
+      // Load Memory (agent-owned data — lives in the agent's own workspace, not the project checkout)
+      const memoryContent = await MemoryManager.loadProjectMemory(this.project.memoryPath, this.workspaceRoot);
 
       // System Instruction
       const systemInstruction = `You are "Suren Coding Agent", an autonomous senior software engineer working directly on Suren's real projects.

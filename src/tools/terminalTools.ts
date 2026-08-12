@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { ToolDefinition } from '../types/agent';
 import { TerminalSecurity } from '../security/terminalSecurity';
+import { safeResolve } from '../security/pathGuard';
 
 export const TERMINAL_TOOL_DEFINITIONS: ToolDefinition[] = [
   {
@@ -60,7 +61,7 @@ export async function executeTerminalTool(
   args: Record<string, any>,
   baseCwd: string = process.cwd()
 ): Promise<any> {
-  const cwd = args.cwd ? (args.cwd.startsWith('/') ? args.cwd : `${baseCwd}/${args.cwd}`) : baseCwd;
+  const cwd = args.cwd ? safeResolve(baseCwd, args.cwd) : baseCwd;
   const timeoutMs = args.timeoutMs || 45000;
 
   let cmdToRun = args.command;

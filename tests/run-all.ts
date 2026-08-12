@@ -8,6 +8,9 @@ try {
   console.log('>>> RUNNING UNIT TESTS...');
   execSync('npx tsx tests/unit.test.ts', { stdio: 'inherit' });
 
+  console.log('>>> RUNNING PATH RESOLUTION TESTS...');
+  execSync('npx tsx tests/pathResolution.test.ts', { stdio: 'inherit' });
+
   console.log('>>> RUNNING INTEGRATION TESTS...');
   execSync('npx tsx tests/integration.test.ts', { stdio: 'inherit' });
 

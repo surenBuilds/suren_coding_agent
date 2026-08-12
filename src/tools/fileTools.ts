@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { ToolDefinition } from '../types/agent';
+import { safeResolve } from '../security/pathGuard';
 
 export const FILE_TOOL_DEFINITIONS: ToolDefinition[] = [
   {
@@ -85,10 +86,7 @@ export const FILE_TOOL_DEFINITIONS: ToolDefinition[] = [
 ];
 
 export async function executeFileTool(name: string, args: Record<string, any>, baseCwd: string = process.cwd()): Promise<any> {
-  const resolvePath = (p: string) => {
-    if (path.isAbsolute(p)) return p;
-    return path.resolve(baseCwd, p);
-  };
+  const resolvePath = (p: string) => safeResolve(baseCwd, p || '.');
 
   switch (name) {
     case 'list_files': {

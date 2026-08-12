@@ -5,6 +5,7 @@ import { createServer as createViteServer } from 'vite';
 import { AgentRouter } from './src/agent/router';
 import { TaskStore } from './src/agent/taskStore';
 import { AgentController } from './src/agent/controller';
+import { ensureProjectWorkspace } from './src/agent/projectWorkspace';
 import { MemoryManager } from './src/memory/memoryManager';
 import { Project } from './src/types/agent';
 
@@ -109,8 +110,13 @@ async function startServer() {
       const configuredMaxIterations = parseInt(process.env.MAX_AGENT_ITERATIONS || '20', 10);
       const task = TaskStore.createTask(project.id, routeResult.cleanRequest, configuredMaxIterations);
 
-      // Start Agent Controller asynchronously
-      const controller = new AgentController(task.id, project);
+      // Resolve (and clone if needed) the project's own local checkout — project-scoped
+      // tools must operate against this, never the agent's own workspace root.
+      const projectBaseCwd = await ensureProjectWorkspace(project);
+
+      // Start Agent Controller asynchronously, scoped to the project's real checkout.
+      // Memory stays in the agent's own workspace (process.cwd()), passed separately.
+      const controller = new AgentController(task.id, project, projectBaseCwd, process.cwd());
 
       // Trigger execution in background
       controller.runTask().catch((err) => {
@@ -162,7 +168,8 @@ async function startServer() {
       projectsMap = await AgentRouter.loadProjects();
       const project = projectsMap.get(task.projectId) || projectsMap.get('krtlab')!;
 
-      const controller = new AgentController(taskId, project);
+      const projectBaseCwd = await ensureProjectWorkspace(project);
+      const controller = new AgentController(taskId, project, projectBaseCwd, process.cwd());
       controller.resumeAfterApproval(Boolean(approved)).catch((err) => {
         console.error('[Resume Error]', err);
       });

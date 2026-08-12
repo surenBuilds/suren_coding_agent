@@ -132,6 +132,11 @@ export class GeminiProvider implements LLMProvider {
           }));
         }
 
+        if (!textOutput && (!toolCalls || toolCalls.length === 0)) {
+          const finishReason = (response as any).candidates?.[0]?.finishReason;
+          console.error(`[GeminiProvider] Empty response with no tool calls. finishReason=${finishReason}`);
+        }
+
         return {
           content: textOutput,
           toolCalls,

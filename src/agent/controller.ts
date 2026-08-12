@@ -116,7 +116,33 @@ RULES:
             });
           }
 
-          const finalReport = llmResponse.content || 'Task completed successfully.';
+          let finalReport = llmResponse.content;
+
+          if (!finalReport || !finalReport.trim()) {
+            // Model returned no text — force a dedicated final-answer turn with no tools available,
+            // so it must respond in plain text instead of silently ending with nothing to say.
+            const closingMessages: LLMMessage[] = [
+              ...messages,
+              {
+                role: 'user',
+                content:
+                  'You have finished gathering information / making changes. Do not call any more tools. ' +
+                  'Write your complete, exhaustive final answer now in plain text: directly address every part of the original request, ' +
+                  'cite the concrete facts/files/values you found or changed, note any assumptions, and suggest next steps if relevant.',
+              },
+            ];
+            try {
+              const closingResponse = await this.provider.generate(closingMessages, undefined, {
+                temperature: 0.1,
+                systemInstruction,
+              });
+              finalReport = closingResponse.content;
+            } catch {
+              // If even this fails, fall through to the generic message below.
+            }
+          }
+
+          finalReport = finalReport && finalReport.trim() ? finalReport : 'Task completed, but the model did not return a summary. Check the Activity tab for the raw steps taken.';
           TaskStore.completeTask(this.taskId, finalReport);
           return task;
         }

@@ -22,52 +22,5 @@
       "lint": "npm run lint"
     },
     "memoryPath": "memory/krtlab/"
-  },
-  "voxline": {
-    "id": "voxline",
-    "name": "Voxline AI",
-    "description": "Real-time AI voice and speech intelligence platform for automated voice workflows.",
-    "localPath": "./projects/voxline",
-    "githubRepository": "voxline-ai/voxline-platform",
-    "defaultBranch": "main",
-    "vercelProject": "voxline-ai-app",
-    "supabaseProject": "voxline-db",
-    "stack": [
-      "React",
-      "TypeScript",
-      "Node.js",
-      "Express",
-      "Supabase",
-      "Vercel"
-    ],
-    "commands": {
-      "test": "npm test",
-      "build": "npm run build",
-      "lint": "npm run lint"
-    },
-    "memoryPath": "memory/voxline/"
-  },
-  "atlas": {
-    "id": "atlas",
-    "name": "Atlas Robotics",
-    "description": "Robotics control, navigation, spatial computing, and telemetry systems.",
-    "localPath": "./projects/atlas",
-    "githubRepository": "suren-tech/atlas-robotics",
-    "defaultBranch": "main",
-    "vercelProject": "",
-    "supabaseProject": "",
-    "stack": [
-      "Python",
-      "C++",
-      "ROS2",
-      "TypeScript",
-      "Docker"
-    ],
-    "commands": {
-      "test": "pytest",
-      "build": "colcon build",
-      "lint": "flake8"
-    },
-    "memoryPath": "memory/atlas/"
   }
 }

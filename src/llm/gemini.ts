@@ -106,7 +106,7 @@ export class GeminiProvider implements LLMProvider {
 
     // Call Gemini API with timeout and retry logic
     let retries = 0;
-    const maxRetries = 2;
+    const maxRetries = 4;
 
     while (retries <= maxRetries) {
       try {
@@ -137,12 +137,22 @@ export class GeminiProvider implements LLMProvider {
           toolCalls,
         };
       } catch (err: any) {
+        const status = err.status || err.code;
+        const isRetryable = status === 429 || status === 503 || status === 500;
+
         retries++;
-        if (retries > maxRetries) {
+        if (!isRetryable || retries > maxRetries) {
           console.error('[GeminiProvider Error]', err);
           throw new Error(`Gemini Provider API call failed: ${err.message || String(err)}`);
         }
-        await new Promise((resolve) => setTimeout(resolve, 1000 * retries));
+
+        // Honor Google's suggested retryDelay (e.g. "19s") when present, else exponential backoff
+        const delayMatch = /"retryDelay":"(\d+(?:\.\d+)?)s"/.exec(err.message || '');
+        const suggestedMs = delayMatch ? Math.ceil(parseFloat(delayMatch[1]) * 1000) : null;
+        const backoffMs = suggestedMs ?? Math.min(2000 * 2 ** (retries - 1), 30000);
+
+        console.error(`[GeminiProvider] Retryable error (status ${status}), waiting ${backoffMs}ms before retry ${retries}/${maxRetries}`);
+        await new Promise((resolve) => setTimeout(resolve, backoffMs + 500));
       }
     }
 

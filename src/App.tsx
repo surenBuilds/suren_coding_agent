@@ -31,6 +31,7 @@ export default function App() {
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('chat');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isAddProjectOpen, setIsAddProjectOpen] = useState<boolean>(false);
 
   // Load Initial Projects & Tasks
@@ -85,6 +86,13 @@ export default function App() {
       }
     };
 
+    eventSource.onerror = () => {
+      // Connection dropped or failed — don't leave the input permanently disabled.
+      // If the task is still genuinely running server-side, reopening the tab / SSE
+      // reconnect logic elsewhere will pick it back up; this just prevents a stuck UI.
+      setIsLoading(false);
+    };
+
     return () => {
       eventSource.close();
     };
@@ -105,14 +113,28 @@ export default function App() {
       });
 
       const data = await res.json();
+
+      if (!res.ok || data.error) {
+        console.error('Task submission failed:', data.error || res.statusText);
+        setSubmitError(data.error || `Request failed (${res.status})`);
+        setIsLoading(false);
+        return;
+      }
+
       if (data.taskId) {
+        setSubmitError(null);
         setActiveTaskId(data.taskId);
         // Refresh tasks
         const tasksRes = await fetch('/api/tasks');
         setTasks(await tasksRes.json());
+      } else {
+        // Defensive: unexpected 2xx response with no taskId — don't leave the UI stuck.
+        setSubmitError('Unexpected response from server (no taskId).');
+        setIsLoading(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Task submission error', err);
+      setSubmitError(err.message || 'Network error while submitting the task.');
       setIsLoading(false);
     }
   };
@@ -233,6 +255,7 @@ export default function App() {
                 activeTask={activeTask}
                 onSubmitPrompt={handleSubmitPrompt}
                 isLoading={isLoading}
+                submitError={submitError}
               />
             )}
 

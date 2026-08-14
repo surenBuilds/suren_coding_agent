@@ -7,6 +7,7 @@ interface ChatViewProps {
   activeTask: AgentTask | null;
   onSubmitPrompt: (prompt: string) => void;
   isLoading: boolean;
+  submitError?: string | null;
 }
 
 export const ChatView: React.FC<ChatViewProps> = ({
@@ -14,6 +15,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
   activeTask,
   onSubmitPrompt,
   isLoading,
+  submitError,
 }) => {
   const [prompt, setPrompt] = useState('');
 
@@ -128,6 +130,12 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
       {/* INPUT FORM */}
       <div className="p-4 border-t border-zinc-800/80 bg-zinc-950">
+        {submitError && (
+          <div className="max-w-3xl mx-auto mb-2 px-3 py-2 rounded-lg bg-red-950/40 border border-red-500/30 text-xs text-red-200 flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+            <span>Failed to start task: {submitError}</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto flex items-center gap-2">
           <div className="flex-1 relative">
             <input

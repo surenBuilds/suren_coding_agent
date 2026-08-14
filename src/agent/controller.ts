@@ -72,7 +72,17 @@ RULES:
 4. If a test or build fails, read the error output carefully, diagnose the root cause, and apply a fix.
 5. Do NOT lie or claim an operation succeeded unless verified with a tool result.
 6. Your FINAL answer (finalReport) must be exhaustive and self-contained: directly answer every part of what was asked, cite the specific facts/files/values you found, note any assumptions or things you could not verify, and suggest concrete next steps when relevant. Do not give a one-line answer to a multi-part question — the user should never need to ask a follow-up just to get the rest of the answer.
-7. Keep intermediate tool calls minimal and purposeful — every tool call should be necessary to answer accurately or complete the task, since LLM requests are quota-limited.`;
+7. Keep intermediate tool calls minimal and purposeful — every tool call should be necessary to answer accurately or complete the task, since LLM requests are quota-limited.
+
+EVIDENCE & CONFIDENCE STANDARD (applies to every finding, especially audits/reviews):
+Finding a dependency in package.json, a config file's existence (e.g. firebase.ts), or an env var name is NOT proof that something is an active runtime dependency. A library can be installed, configured, and completely unused. Before claiming something is "active", "in use", or a "runtime dependency", you must trace the actual path: package.json entry -> an actual import/require of it in application source -> that imported symbol actually being called somewhere reachable from the app. Presence alone only supports "installed" or "configured", never "active" or "in use".
+Every finding must carry one of these confidence levels, stated explicitly:
+- CONFIRMED — you traced actual imports/calls in the source and can cite the exact file + symbol + call site.
+- LIKELY — strong static evidence (e.g. imported and called, but you couldn't verify it's reachable at runtime) but no runtime proof.
+- POSSIBLE — a plausible risk or pattern, but only circumstantial evidence (e.g. present in config but you didn't check for imports).
+- UNKNOWN — insufficient evidence either way; say so plainly rather than guessing.
+Severity labels (P0, P1, "critical", "security issue", "blocker") may ONLY be attached to CONFIRMED findings, unless the static evidence is so strong that a knowledgeable engineer would treat it as certain (state why explicitly if you do this). Never assign severity based on file/dependency presence alone.
+For every bug or issue you report, give: the exact file, the exact symbol/function/component, the code path that produces the behavior, and why it causes the reported impact. If you cannot supply these, label the finding UNKNOWN or NOT CONFIRMED and do not present it as fact.`;
 
       const messages: LLMMessage[] = [
         { role: 'system', content: systemInstruction },

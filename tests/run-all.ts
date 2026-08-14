@@ -11,6 +11,9 @@ try {
   console.log('>>> RUNNING PATH RESOLUTION TESTS...');
   execSync('npx tsx tests/pathResolution.test.ts', { stdio: 'inherit' });
 
+  console.log('>>> RUNNING AUDIT EVIDENCE TESTS...');
+  execSync('npx tsx tests/auditEvidence.test.ts', { stdio: 'inherit' });
+
   console.log('>>> RUNNING INTEGRATION TESTS...');
   execSync('npx tsx tests/integration.test.ts', { stdio: 'inherit' });
 

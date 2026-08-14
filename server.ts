@@ -66,6 +66,7 @@ async function startServer() {
 
       res.json({ success: true, project: currentData[newProj.id] });
     } catch (err: any) {
+      console.error('[POST /api/projects Error]', err);
       res.status(500).json({ error: err.message || String(err) });
     }
   });
@@ -125,6 +126,7 @@ async function startServer() {
 
       res.json({ success: true, taskId: task.id, projectId: project.id, task });
     } catch (err: any) {
+      console.error('[POST /api/tasks Error]', err);
       res.status(500).json({ error: err.message || String(err) });
     }
   });
@@ -176,6 +178,7 @@ async function startServer() {
 
       res.json({ success: true, taskId, approved });
     } catch (err: any) {
+      console.error('[POST /api/tasks/:id/approve Error]', err);
       res.status(500).json({ error: err.message || String(err) });
     }
   });
@@ -201,6 +204,7 @@ async function startServer() {
       const ok = await MemoryManager.updateProjectMemory(proj.memoryPath, filename, content);
       res.json({ success: ok });
     } catch (err: any) {
+      console.error('[POST /api/memory/:projectId Error]', err);
       res.status(500).json({ error: err.message || String(err) });
     }
   });

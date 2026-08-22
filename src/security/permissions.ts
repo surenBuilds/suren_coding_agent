@@ -53,9 +53,21 @@ export class PermissionManager {
     'github_merge_pull_request',
   ]);
 
+  private static PROTECTED_BRANCHES = new Set(['main', 'master']);
+
   public static getPermissionLevel(toolName: string, args?: Record<string, any>): PermissionLevel {
     if (this.DEPLOY_TOOLS.has(toolName)) {
       return 'DEPLOY';
+    }
+
+    // Direct commits to a protected branch via the GitHub API bypass any PR/review
+    // process entirely and go straight to the live branch (often auto-deployed by
+    // Vercel/Railway) — always require explicit approval, never auto-approve.
+    if (toolName === 'github_commit') {
+      const branch = String(args?.branch || 'main').toLowerCase();
+      if (this.PROTECTED_BRANCHES.has(branch)) {
+        return 'DEPLOY';
+      }
     }
 
     if (toolName === 'run_command' && args?.command) {
@@ -106,12 +118,23 @@ export class PermissionManager {
       }
 
       if (toolName === 'run_command' && args?.command) {
-        const cmd = String(args.command);
-        if (cmd.includes('npm install') || cmd.includes('yarn add') || cmd.includes('pip install')) {
+        const cmd = String(args.command).trim();
+        // Bare install (restores existing package.json/lockfile deps) is safe to auto-approve.
+        // Installing a NEW named package is not — it pulls in unreviewed third-party code.
+        const isBareInstall = /^(npm (install|ci)|yarn( install)?|pip install -r )\s*$/i.test(cmd) || /^npm install\s*$/i.test(cmd);
+        const isNamedInstall = /\b(npm install|yarn add|pip install)\s+\S/i.test(cmd) && !isBareInstall;
+        if (isBareInstall) {
           return {
-            requiresApproval: false, // Dependency additions allowed during build/test loops unless specified
+            requiresApproval: false,
             riskLevel: 'LOW',
-            reason: 'Installing dependencies',
+            reason: 'Restoring existing declared dependencies',
+          };
+        }
+        if (isNamedInstall) {
+          return {
+            requiresApproval: true, // always require approval for new/named packages, even with autoApproveModify
+            riskLevel: 'MEDIUM',
+            reason: `Installing a new/specific package not already declared: ${cmd}`,
           };
         }
       }

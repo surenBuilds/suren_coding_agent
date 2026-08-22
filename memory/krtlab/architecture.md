@@ -1,5 +1,13 @@
 # KrtLab Architecture
 
+> **Provenance**: Corrected via direct repository inspection against
+> `surenBuilds/Krtlab-appp` — Firebase/persistence facts verified at commit
+> `f325e00` (2026-08-22), AI content contract verified at PR #2
+> (`harden-ai-output-validation` branch). The prior version of this file was
+> never verified against real code and contained false claims (see
+> HISTORICAL note below and `known-issues.md`). If you re-verify any fact
+> here, update this provenance line with the new commit/date.
+>
 > Last verified against actual repository content (surenBuilds/Krtlab-appp) during
 > a direct code audit. Previous version of this file incorrectly described Supabase
 > as the backend -- that was never verified against real code and was wrong. Treat
